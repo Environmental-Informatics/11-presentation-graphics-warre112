@@ -7,6 +7,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 
 def ReadData( fileName ):
     """This function takes a filename as input, and returns a dataframe with
@@ -53,7 +54,7 @@ def GetMonthlyStatistics(DataDF):
     """This function calculates monthly descriptive statistics and metrics 
     for the given streamflow time series.  Values are returned as a dataframe
     of monthly values for each year."""
-    colnames = ['site_no','Mean Flow','Coeff Var','TQmean','R-B Index']
+    colnames = ['site_no','Mean Flow','Coeff Var','Tqmean','R-B Index']
     monthdata= DataDF.resample('MS').mean() 
 
     MoDataDF = pd.DataFrame(0, index=monthdata.index, columns=colnames)
@@ -62,11 +63,11 @@ def GetMonthlyStatistics(DataDF):
   
     MoDataDF['Mean Flow']=DataDF.resample('MS')['Discharge'].mean()
    
+    MoDataDF['Coeff Var'] = (DataDF.resample('MS')['Discharge'].std()/ 
+            DataDF.resample('MS')['Discharge'].mean())*100
 
-   
-
+    
     return ( MoDataDF )
-
 def GetMonthlyAverages(MoDataDF):
     """This function calculates annual average monthly values for all 
     statistics and metrics.  The routine returns an array of mean values 
@@ -104,10 +105,115 @@ def ReadMetrics( fileName ):
 # case run the test code, otherwise functions are being imported so do not.
 # put the main routines from your code after this conditional check.
 
+##Code from Lab 10 to Read in Data and Dataframes
 if __name__ == '__main__':
 
     # define full river names as a dictionary so that abbreviations are not used in figures
     riverName = { "Wildcat": "Wildcat Creek",
                   "Tippe": "Tippecanoe River" }
+
+    fileName = { "Wildcat": "WildcatCreek_Discharge_03335000_19540601-20200315.txt",
+                 "Tippe": "TippecanoeRiver_Discharge_03331500_19431001-20200315.txt" }
     
- 
+    DataDF = {} #blank dictionaries 
+    MoDataDF = {}
+    MonthlyAverages = {}
+    MissingValues = {}
+    
+    for file in fileName.keys():
+        DataDF[file], MissingValues[file] = ReadData(fileName[file])
+        DataDF[file], MissingValues[file] = ClipData( DataDF[file], '1969-10-01', '2019-09-30' )
+        MoDataDF[file] = GetMonthlyStatistics(DataDF[file])
+        MonthlyAverages[file] = GetMonthlyAverages(MoDataDF[file])
+##Read in new files from Lab 10   
+    AnnualMetrics=ReadMetrics('Annual_Metrics.csv') 
+    MonthlyMetrics=ReadMetrics('Monthly_Metrics.csv')
+    tippe=AnnualMetrics[AnnualMetrics['Station']=='Tippe'] #Sort by stattion name -> Tippecanoe rows only
+    wildcat=AnnualMetrics[AnnualMetrics['Station']=='Wildcat']#Sort by stattion name -> Wildcat rows only
+
+
+#Figures
+#Daily Stream Flow Plot
+    plt.figure(figsize=(16,10)) #custom size for better view
+    plt.subplot(211)
+    plt.plot(DataDF ['Tippe']['Discharge'], 'black',label = 'Tippecanoe')
+    plt.ylabel('Discharge (cfs)')
+    plt.legend(loc='upper right')
+    plt.subplot(212)
+    plt.plot(DataDF['Wildcat']['Discharge'], 'blue',label = 'Wildcat')
+    plt.xlabel('Date')
+    plt.ylabel('Discharge (cfs)')
+    plt.legend(loc='upper right') #adding legend location 
+    plt.savefig('5 Year Daily Flow.png', dpi=96) # save the plot as PNG resolution of 96 dpi
+    plt.close()
+
+#Annual Coefficent  Plot
+    fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
+    plt.plot(tippe['Coeff Var'],'black',linestyle='None',marker='.',label='Tippecanoe')
+    plt.plot(wildcat['Coeff Var'],'blue', linestyle='None',marker='*',label='Wildcat')
+    plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
+    plt.title("Annual Coefficient of Variation (1970-2019)",fontsize=20)
+    plt.xlabel("Year",fontsize=20)
+    plt.ylabel("Coefficient of Variation",fontsize=20)
+    plt.savefig("Annual Coefficient of Variation.png",dpi=96)# save the plot as PNG resolution of 96 dpi
+    plt.close()
+    
+#Annual TQ Mean Plot
+    fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
+    plt.plot(tippe['TQmean'],'black',linestyle='None',marker='.',label='Tippecanoe')
+    plt.plot(wildcat['TQmean'],'blue', linestyle='None',marker='*',label='Wildcat')
+    plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
+    plt.title("Annual Tqmean (1970-2019)",fontsize=20)
+    plt.xlabel("Year",fontsize=20)
+    plt.ylabel("Tqmean",fontsize=20)
+    plt.savefig("Annual TQ Mean.png",dpi=96)# save the plot as PNG with a resolution of 96 dpi
+    plt.close()
+
+# R-B Index Plot
+    fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
+    plt.plot(tippe['R-B Index'],'black',linestyle='None',marker='.',label='Tippecanoe')
+    plt.plot(wildcat['R-B Index'],'blue', linestyle='None',marker='*',label='Wildcat')
+    plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
+    plt.title("Annual R-B Index (1970-2019)",fontsize=20)
+    plt.xlabel("Year",fontsize=20)
+    plt.ylabel("R-B Index",fontsize=20)
+    plt.savefig("Annual R-B Index.png",dpi=96)# save the plot as PNG with a resolution of 96 dpi
+    plt.close()
+    
+#Average Annual Monthly Flow Plot
+    fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
+    plt.plot(MonthlyAverages['Tippe']['Mean Flow'],'black',linestyle='None',marker='.',label='Tippecanoe')
+    plt.plot(MonthlyAverages['Wildcat']['Mean Flow'],'blue', linestyle='None',marker='*',label='Wildcat')
+    plt.xticks(np.arange(1,13,1)) #custom x ticks to denote month of year
+    plt.legend(loc='upper right')
+    plt.xlabel('Month of Year')
+    plt.ylabel('Discharge (cfs)')
+    plt.savefig('Average Monthly Flow.png')
+    plt.close()
+
+#Exceedence Probability Calculations    
+
+    tippe2=tippe.drop(columns=['site_no', 'Mean Flow', 'Median', 'Coeff Var', 'Skew', 'TQmean', 'R-B Index', '7Q', '3xMedian'])
+    tippe_flow=tippe2.sort_values('Peak Flow', ascending=False) #Sort values
+    tippe_ranks1= stats.rankdata(tippe_flow['Peak Flow'], method='average') #Rank values
+    tippe_ranks2=tippe_ranks1[::-1]
+    tippe_ep=[(tippe_ranks2[i]/(len(tippe_flow)+1)) for i in range(len(tippe_flow))] #Excedence Calculation for Tippecanoe
+    
+    
+    wildcat2=wildcat.drop(columns=['site_no', 'Mean Flow', 'Median', 'Coeff Var', 'Skew', 'TQmean', 'R-B Index', '7Q', '3xMedian'])
+    wildcat_flow=wildcat2.sort_values('Peak Flow', ascending=False) #Sort Values
+    wildcat_ranks1=stats.rankdata(wildcat_flow['Peak Flow'], method='average') #Rank Values
+    wildcat_ranks2=wildcat_ranks1[::-1]
+    wildcat_ep=[(wildcat_ranks2[i]/(len(wildcat_flow)+1)) for i in range(len(wildcat_flow))] #Excedence Calculation for Wildcat
+    
+# Excendence Probability Plot 
+    plt.plot(tippe_ep, tippe_flow['Peak Flow'], label='Tippecanoe River', color='black')
+    plt.plot(wildcat_ep, wildcat_flow['Peak Flow'], label='Wildcat River', color='blue')
+    plt.xlabel("Exceedence Probability")
+    plt.ylabel("Peak Discharge (CFS)")
+    ax= plt.gca()
+    ax.set_xlim(1,0) #reverse x axis 
+    plt.tight_layout()
+    plt.legend()
+    plt.savefig('Exceedence Probability.png', dpi=96) #Save plot as PNG with 96 dpi   
+    plt.close()
