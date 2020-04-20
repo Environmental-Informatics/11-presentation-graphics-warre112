@@ -153,7 +153,7 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
     plt.plot(tippe['Coeff Var'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(wildcat['Coeff Var'],'blue', linestyle='None',marker='*',label='Wildcat')
-    plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
+    plt.legend(loc='best',edgecolor='k',fontsize=20)
     plt.xlabel("Year",fontsize=20)
     plt.ylabel("Coefficient of Variation",fontsize=20)
     plt.savefig("Annual Coefficient of Variation.png",dpi=96)# save the plot as PNG resolution of 96 dpi
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
     plt.plot(tippe['TQmean'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(wildcat['TQmean'],'blue', linestyle='None',marker='*',label='Wildcat')
-    plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
+    plt.legend(loc='best',edgecolor='k',fontsize=20)
     plt.xlabel("Year",fontsize=20)
     plt.ylabel("Tqmean",fontsize=20)
     plt.savefig("Annual TQ Mean.png",dpi=96)# save the plot as PNG with a resolution of 96 dpi
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16,10)) #custom figure size for better resolution
     plt.plot(tippe['R-B Index'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(wildcat['R-B Index'],'blue', linestyle='None',marker='*',label='Wildcat')
-    plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
+    plt.legend(loc='best',edgecolor='k',fontsize=20)
     plt.xlabel("Year",fontsize=20)
     plt.ylabel("R-B Index",fontsize=20)
     plt.savefig("Annual R-B Index.png",dpi=96)# save the plot as PNG with a resolution of 96 dpi
