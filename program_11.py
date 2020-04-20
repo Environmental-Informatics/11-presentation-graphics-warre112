@@ -152,7 +152,6 @@ if __name__ == '__main__':
     plt.plot(tippe['Coeff Var'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(wildcat['Coeff Var'],'blue', linestyle='None',marker='*',label='Wildcat')
     plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
-    plt.title("Annual Coefficient of Variation (1970-2019)",fontsize=20)
     plt.xlabel("Year",fontsize=20)
     plt.ylabel("Coefficient of Variation",fontsize=20)
     plt.savefig("Annual Coefficient of Variation.png",dpi=96)# save the plot as PNG resolution of 96 dpi
@@ -163,7 +162,6 @@ if __name__ == '__main__':
     plt.plot(tippe['TQmean'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(wildcat['TQmean'],'blue', linestyle='None',marker='*',label='Wildcat')
     plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
-    plt.title("Annual Tqmean (1970-2019)",fontsize=20)
     plt.xlabel("Year",fontsize=20)
     plt.ylabel("Tqmean",fontsize=20)
     plt.savefig("Annual TQ Mean.png",dpi=96)# save the plot as PNG with a resolution of 96 dpi
@@ -174,7 +172,6 @@ if __name__ == '__main__':
     plt.plot(tippe['R-B Index'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(wildcat['R-B Index'],'blue', linestyle='None',marker='*',label='Wildcat')
     plt.legend([riverName['Wildcat'],riverName['Tippe']], loc='best',edgecolor='k',fontsize=20)
-    plt.title("Annual R-B Index (1970-2019)",fontsize=20)
     plt.xlabel("Year",fontsize=20)
     plt.ylabel("R-B Index",fontsize=20)
     plt.savefig("Annual R-B Index.png",dpi=96)# save the plot as PNG with a resolution of 96 dpi
@@ -185,9 +182,9 @@ if __name__ == '__main__':
     plt.plot(MonthlyAverages['Tippe']['Mean Flow'],'black',linestyle='None',marker='.',label='Tippecanoe')
     plt.plot(MonthlyAverages['Wildcat']['Mean Flow'],'blue', linestyle='None',marker='*',label='Wildcat')
     plt.xticks(np.arange(1,13,1)) #custom x ticks to denote month of year
-    plt.legend(loc='upper right')
-    plt.xlabel('Month of Year')
-    plt.ylabel('Discharge (cfs)')
+    plt.legend(loc='upper right',fontsize=20)
+    plt.xlabel('Month of Year',fontsize=20)
+    plt.ylabel('Discharge (cfs)',fontsize=20)
     plt.savefig('Average Monthly Flow.png')
     plt.close()
 
@@ -207,13 +204,14 @@ if __name__ == '__main__':
     wildcat_ep=[(wildcat_ranks2[i]/(len(wildcat_flow)+1)) for i in range(len(wildcat_flow))] #Excedence Calculation for Wildcat
     
 # Excendence Probability Plot 
+    fig = plt.figure(figsize=(16,10)) 
     plt.plot(tippe_ep, tippe_flow['Peak Flow'], label='Tippecanoe River', color='black')
     plt.plot(wildcat_ep, wildcat_flow['Peak Flow'], label='Wildcat River', color='blue')
-    plt.xlabel("Exceedence Probability")
-    plt.ylabel("Peak Discharge (CFS)")
+    plt.xlabel("Exceedence Probability",fontsize=20)
+    plt.ylabel("Peak Discharge (CFS)",fontsize=20)
     ax= plt.gca()
     ax.set_xlim(1,0) #reverse x axis 
     plt.tight_layout()
-    plt.legend()
+    plt.legend(fontsize=20)
     plt.savefig('Exceedence Probability.png', dpi=96) #Save plot as PNG with 96 dpi   
     plt.close()
