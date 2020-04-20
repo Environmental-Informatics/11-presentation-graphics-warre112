@@ -134,13 +134,15 @@ if __name__ == '__main__':
 
 #Figures
 #Daily Stream Flow Plot
+    Wild5= DataDF['Wildcat']['2014-10-01' : '2019-09-30'] #Last 5 years
+    Tippe5= DataDF['Tippe']['2014-10-01' : '2019-09-30'] #last 5 years 
     plt.figure(figsize=(16,10)) #custom size for better view
     plt.subplot(211)
-    plt.plot(DataDF ['Tippe']['Discharge'], 'black',label = 'Tippecanoe')
+    plt.plot(Tippe5['Discharge'], 'black',label = 'Tippecanoe')
     plt.ylabel('Discharge (cfs)')
     plt.legend(loc='upper right')
     plt.subplot(212)
-    plt.plot(DataDF['Wildcat']['Discharge'], 'blue',label = 'Wildcat')
+    plt.plot(Wild5['Discharge'], 'blue',label = 'Wildcat')
     plt.xlabel('Date')
     plt.ylabel('Discharge (cfs)')
     plt.legend(loc='upper right') #adding legend location 
